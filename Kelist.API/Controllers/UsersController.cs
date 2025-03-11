@@ -1,6 +1,7 @@
 ﻿using Application.Users.Commands.CreateUser;
 using Application.Users.Commands.DeleteUser;
 using Application.Users.Commands.UpdateUser;
+using Application.Users.Queries.GetAll;
 using Application.Users.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,17 @@ namespace Kelist.API.Controllers
         public UsersController(ISender mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var userResult = await _mediator.Send(new GetAllUsersQuery());
+
+            return userResult.Match(
+                users => Ok(users),
+                errors => Problem(errors)
+            );
         }
 
         [HttpGet("{id}")]

@@ -5,6 +5,7 @@ namespace Application.Data.Repositories
 {
     public interface IUserRepository
     {
+        Task<List<UserDTO>> GetAll();
         Task<UserDTO?> GetByIdAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);
         void Add(UserDTO user);
