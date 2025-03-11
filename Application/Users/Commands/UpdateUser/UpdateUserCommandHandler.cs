@@ -33,7 +33,7 @@ namespace Application.Users.Commands.UpdateUser
             if (emailResult.IsError) return emailResult.Errors;
             var email = emailResult.Value;
 
-            var user = new User(new UserId(command.Id), command.Name, command.LastName, email);
+            var user = new User(new UserId(command.Id), command.Name.Trim(), command.LastName.Trim(), email);
             user.NotifyUpdate();
             var events = user.GetDomainEvents();
 

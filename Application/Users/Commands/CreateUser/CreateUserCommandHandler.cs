@@ -29,7 +29,7 @@ namespace Application.Users.Commands.CreateUser
 
             var email = emailResult.Value;
 
-            var user = new User(new UserId(Guid.NewGuid()), command.Name, command.LastName, email);
+            var user = new User(new UserId(Guid.NewGuid()), command.Name.Trim(), command.LastName.Trim(), email);
             user.NotifyCreate();
 
             var events = user.GetDomainEvents();
