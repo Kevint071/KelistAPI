@@ -1,0 +1,24 @@
+﻿using Domain.Tasks;
+
+namespace Domain.TaskLists
+{
+    public sealed class TaskList
+    {
+        public TaskList(TaskListId id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        private TaskList() { }
+
+        public TaskListId Id { get; private set; } = default!;
+        public string? Name { get; private set; }
+        public List<TaskItem> Tasks { get; private set; } = [];
+
+        public void AddTask(TaskItem task)
+        {
+            Tasks.Add(task);
+        }
+    }
+}
