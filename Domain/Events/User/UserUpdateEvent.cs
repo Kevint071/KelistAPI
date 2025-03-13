@@ -3,5 +3,5 @@ using Domain.Users;
 
 namespace Domain.Events.User
 {
-    public record UserUpdateEvent(UserId UserId, string FullName, string Email) : DomainEvent(Guid.NewGuid());
+    public record UserUpdateEvent(Guid UserId, string FullName, string Email) : DomainEvent(Guid.NewGuid());
 }
