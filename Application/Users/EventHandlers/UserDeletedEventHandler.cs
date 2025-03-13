@@ -15,7 +15,7 @@ namespace Application.Users.EventHandlers
 
         public Task Handle(UserDeletedEvent notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("The user \"{FullName}\" with Id \"{UserId}\" was deleted.", notification.FullName, notification.UserId.Value);
+            _logger.LogInformation("The user \"{FullName}\" with Id \"{UserId}\" was deleted.", notification.FullName, notification.UserId);
             return Task.CompletedTask;
         }
     }
