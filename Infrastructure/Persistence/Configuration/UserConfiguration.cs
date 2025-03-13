@@ -18,6 +18,8 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasIndex(x => x.Email).IsUnique();
             builder.Property(x => x.Email)
                  .IsRequired();
+            builder.HasMany(x => x.TaskLists).WithOne().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade);
+            builder.Metadata.SetPropertyAccessMode(PropertyAccessMode.Property);
         }
     }
 }

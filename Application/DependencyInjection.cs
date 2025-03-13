@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.Common.Behaviors;
+using Application.Users.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace Application
 
             services.AddValidatorsFromAssemblyContaining<ApplicationAssemblyReference>();
             services.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
+            services.AddScoped<UserService>();
 
             return services;
         }

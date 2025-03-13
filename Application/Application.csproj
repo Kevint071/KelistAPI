@@ -13,12 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TaskLists\Commands\" />
-    <Folder Include="TaskLists\Dtos\" />
     <Folder Include="TaskLists\Queries\" />
     <Folder Include="TaskLists\Services\" />
     <Folder Include="Tasks\Commands\" />
-    <Folder Include="Tasks\Dtos\" />
     <Folder Include="Tasks\Queries\" />
     <Folder Include="Tasks\Services\" />
   </ItemGroup>

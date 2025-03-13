@@ -15,7 +15,7 @@ namespace Application.Users.EventHandlers
 
         public Task Handle(UserCreatedEvent notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("The user \"{FullName}\" with Email \"{Email}\" and Id \"{UserId}\" was created.", notification.FullName, notification.Email, notification.UserId.Value);
+            _logger.LogInformation("The user \"{FullName}\" with Email \"{Email}\" and Id \"{UserId}\" was created.", notification.FullName, notification.Email, notification.UserId);
             return Task.CompletedTask;
         }
     }

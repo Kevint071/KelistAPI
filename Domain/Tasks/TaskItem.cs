@@ -2,24 +2,16 @@
 {
     public sealed class TaskItem
     {
-        public TaskItem(TaskItemId id, string title, string description)
+        public TaskItem(TaskItemId id, string description, bool isCompleted = false)
         {
             Id = id;
-            Title = title;
             Description = description;
-            IsCompleted = false;
+            IsCompleted = isCompleted;
         }
-
         private TaskItem() { }
 
-        public TaskItemId Id { get; private set; } = new TaskItemId(Guid.NewGuid());
-        public string? Title { get; private set; }
-        public string? Description { get; private set; }
+        public TaskItemId Id { get; private set; } = default!;
+        public string Description { get; private set; } = default!;
         public bool IsCompleted { get; private set; }
-
-        public void MarkAsCompleted()
-        {
-            IsCompleted = true;
-        }
     }
 }

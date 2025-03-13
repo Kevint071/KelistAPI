@@ -7,7 +7,7 @@ namespace Domain.Users
 {
     public sealed class User : AggregateRoot
     {
-        public User(UserId id, string name, string lastname, Email email)
+        public User(UserId id, Name name, LastName lastname, Email email)
         {
             Id = id;
             Name = name;
@@ -18,9 +18,9 @@ namespace Domain.Users
         private User() { }
 
         public UserId Id { get; private set; } = default!;
-        public string? Name { get; private set; }
-        public string? LastName { get; private set; }
-        public string FullName => $"{Name} {LastName}";
+        public Name Name { get; private set; } = default!;
+        public LastName LastName { get; private set; } = default!;
+        public string FullName => $"{Name.Value} {LastName.Value}";
         public Email Email { get; private set; } = default!;
         public List<TaskList> TaskLists { get; private set; } = [];
 
@@ -31,17 +31,17 @@ namespace Domain.Users
 
         public void NotifyCreate()
         {
-            Raise(new UserCreatedEvent(Id, FullName, Email.Value));
+            Raise(new UserCreatedEvent(Id.Value, FullName, Email.Value));
         }
 
         public void NotifyUpdate()
         {
-            Raise(new UserUpdateEvent(Id, FullName, Email.Value));
+            Raise(new UserUpdateEvent(Id.Value, FullName, Email.Value));
         }
 
         public void NotifyDelete()
         {
-            Raise(new UserDeletedEvent(Id, FullName));
+            Raise(new UserDeletedEvent(Id.Value, FullName));
         }
     }
 }
