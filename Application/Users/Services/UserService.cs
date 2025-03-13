@@ -1,7 +1,9 @@
 ﻿using Application.Common;
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
+using Application.TaskLists.Dtos;
 using Application.Users.Dtos;
+using Domain.TaskLists;
 using Domain.Users;
 using Domain.ValueObjects;
 
@@ -88,12 +90,17 @@ namespace Application.Users.Services
 
         private static User MapToDomain(UserDTO userDto)
         {
-            return new User(
+            var user = new User(
                 new UserId(userDto.Id),
                 Name.Create(userDto.Name).Value,
                 LastName.Create(userDto.LastName).Value,
                 Email.Create(userDto.Email).Value
             );
+            user.TaskLists.AddRange(userDto.TaskLists.Select(tl => new TaskList(
+                new TaskListId(tl.Id),
+                tl.Name
+            )));
+            return user;
         }
 
         private static UserDTO MapToDto(User user)
@@ -102,7 +109,12 @@ namespace Application.Users.Services
                 user.Id.Value,
                 user.Name.Value,
                 user.LastName.Value,
-                user.Email.Value
+                user.Email.Value,
+                [.. user.TaskLists.Select(tl => new TaskListDTO
+                {
+                    Id = tl.Id.Value,
+                    Name = tl.Name
+                })]
             );
         }
     }

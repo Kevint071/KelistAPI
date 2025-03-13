@@ -31,17 +31,17 @@ namespace Domain.Users
 
         public void NotifyCreate()
         {
-            Raise(new UserCreatedEvent(Id, FullName, Email.Value));
+            Raise(new UserCreatedEvent(Id.Value, FullName, Email.Value));
         }
 
         public void NotifyUpdate()
         {
-            Raise(new UserUpdateEvent(Id, FullName, Email.Value));
+            Raise(new UserUpdateEvent(Id.Value, FullName, Email.Value));
         }
 
         public void NotifyDelete()
         {
-            Raise(new UserDeletedEvent(Id, FullName));
+            Raise(new UserDeletedEvent(Id.Value, FullName));
         }
     }
 }

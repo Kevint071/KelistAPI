@@ -16,7 +16,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasMany(x => x.TaskItems)
                    .WithOne()
                    .HasForeignKey("TaskListId");
-            builder.HasOne<UserDTO>().WithMany().HasForeignKey(x => x.UserId);
+            builder.HasOne<UserDTO>().WithMany(u => u.TaskLists).HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade);
             builder.Metadata.SetPropertyAccessMode(PropertyAccessMode.Property);
         }
     }

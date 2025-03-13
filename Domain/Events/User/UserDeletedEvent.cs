@@ -3,5 +3,5 @@ using Domain.Users;
 
 namespace Domain.Events.User
 {
-    public record UserDeletedEvent(UserId UserId, string FullName) : DomainEvent(Guid.NewGuid());
+    public record UserDeletedEvent(Guid UserId, string FullName) : DomainEvent(Guid.NewGuid());
 }

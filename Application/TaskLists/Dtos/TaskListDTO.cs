@@ -7,6 +7,5 @@ namespace Application.TaskLists.Dtos
         public Guid Id { get; set; }
         public string Name { get; set; } = default!;
         public List<TaskItemDTO> TaskItems { get; set; } = [];
-        public Guid UserId { get; set; }
     }
 }
