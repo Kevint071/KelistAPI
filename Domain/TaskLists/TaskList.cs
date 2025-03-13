@@ -13,12 +13,12 @@ namespace Domain.TaskLists
         private TaskList() { }
 
         public TaskListId Id { get; private set; } = default!;
-        public string? Name { get; private set; }
-        public List<TaskItem> Tasks { get; private set; } = [];
+        public string Name { get; private set; } = default!;
+        public List<TaskItem> TaskItems { get; private set; } = [];
 
-        public void AddTask(TaskItem task)
+        public void AddTaskItem(TaskItem taskItem)
         {
-            Tasks.Add(task);
+            TaskItems.Add(taskItem);
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using Application.Common;
-using Application.Data.Interfaces;
 using Application.Data.Repositories;
-using Application.Users.Dtos;
+using Application.Users.Services;
 using Domain.Users;
-using Domain.ValueObjects;
 using ErrorOr;
 using MediatR;
 
@@ -12,14 +10,14 @@ namespace Application.Users.Commands.UpdateUser
     internal sealed class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ErrorOr<Unit>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IDomainEventPublisher _domainEventPublisher;
+        private readonly UserService _userService;
 
-        public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IDomainEventPublisher domainEventPublisher)
+        public UpdateUserCommandHandler(IUserRepository userRepository, IDomainEventPublisher domainEventPublisher, UserService userService)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
         public async Task<ErrorOr<Unit>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
@@ -29,32 +27,14 @@ namespace Application.Users.Commands.UpdateUser
                 return Error.NotFound("User.NotFound", "The user with the provided Id was not found.");
             }
 
-            var emailResult = Email.Create(command.Email);
-            if (emailResult.IsError) return emailResult.Errors;
-            var email = emailResult.Value;
+            var validationResult = ValueObjectValidator.ValidateUserValueObjects(command.Email, command.Name, command.LastName);
+            if (validationResult.IsError) return validationResult.Errors;
 
-            var user = new User(new UserId(command.Id), command.Name.Trim(), command.LastName.Trim(), email);
-            user.NotifyUpdate();
-            var events = user.GetDomainEvents();
+            var (name, lastName, email) = validationResult.Value;
+            var user = new User(new UserId(command.Id), name, lastName, email);
 
-            var userDto = new UserDTO(
-                command.Id,
-                user.Name!,
-                user.LastName!,
-                user.Email.Value
-            );
-
-            _userRepository.Update(userDto);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            if (events.Count != 0)
-            {
-                await _domainEventPublisher.PublishEventAsync(events, cancellationToken);
-                user.ClearDomainEvents();
-            }
-
+            await _userService.UpdateAsync(user, cancellationToken);
             return Unit.Value;
-
         }
     }
 }
