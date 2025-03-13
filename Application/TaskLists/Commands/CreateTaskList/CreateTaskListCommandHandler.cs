@@ -1,7 +1,7 @@
 ﻿using Application.Common;
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
-using Application.Tasks.Dtos;
+using Application.TaskLists.Dtos;
 using Domain.TaskLists;
 using Domain.Users;
 using Domain.ValueObjects;

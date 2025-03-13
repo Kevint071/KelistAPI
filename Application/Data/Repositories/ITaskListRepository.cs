@@ -1,4 +1,4 @@
-﻿using Application.Tasks.Dtos;
+﻿using Application.TaskLists.Dtos;
 
 namespace Application.Data.Repositories
 {

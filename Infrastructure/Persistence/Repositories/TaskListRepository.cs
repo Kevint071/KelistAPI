@@ -1,5 +1,5 @@
 ﻿using Application.Data.Repositories;
-using Application.Tasks.Dtos;
+using Application.TaskLists.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
