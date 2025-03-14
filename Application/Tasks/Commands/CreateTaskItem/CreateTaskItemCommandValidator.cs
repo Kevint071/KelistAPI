@@ -9,9 +9,6 @@ namespace Application.Tasks.Commands.CreateTaskItem
             RuleFor(r => r.Description)
                 .NotEmpty()
                 .MaximumLength(600);
-
-            RuleFor(r => r.IsCompleted)
-                .NotNull();
         }
     }
 }
