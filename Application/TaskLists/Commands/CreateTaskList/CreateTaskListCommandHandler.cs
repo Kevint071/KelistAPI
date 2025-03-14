@@ -2,7 +2,6 @@
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.TaskLists.Dtos;
-using Application.Users.Services;
 using ErrorOr;
 using MediatR;
 
@@ -10,13 +9,11 @@ namespace Application.TaskLists.Commands.CreateTaskList
 {
     internal sealed class CreateTaskListCommandHandler : IRequestHandler<CreateTaskListCommand, ErrorOr<Unit>>
     {
-        private readonly UserService _userService;
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateTaskListCommandHandler(UserService userService, IUserRepository userRepository, IUnitOfWork unitOfWork)
+        public CreateTaskListCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
-            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _unitOfWork = unitOfWork?? throw new ArgumentNullException(nameof(unitOfWork));
         }
