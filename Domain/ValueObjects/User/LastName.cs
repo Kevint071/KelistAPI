@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using ErrorOr;
 
-namespace Domain.ValueObjects
+namespace Domain.ValueObjects.User
 {
     public partial record LastName
     {
