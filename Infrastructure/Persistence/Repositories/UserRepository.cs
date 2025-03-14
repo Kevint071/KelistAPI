@@ -47,6 +47,7 @@ namespace Infrastructure.Persistence.Repositories
             existingTaskList.TaskListName = taskListDto.TaskListName;
             _context.Entry(existingTaskList).State = EntityState.Modified;
         }
+
         public void DeleteTaskList(Guid userId, Guid taskListId)
         {
             var userDto = _context.Users
