@@ -1,16 +1,16 @@
 ﻿using Domain.Events.User;
 using Domain.Primitives;
 using Domain.TaskLists;
-using Domain.ValueObjects;
+using Domain.ValueObjects.User;
 
 namespace Domain.Users
 {
     public sealed class User : AggregateRoot
     {
-        public User(UserId id, Name name, LastName lastname, Email email)
+        public User(UserId id, PersonName name, LastName lastname, Email email)
         {
             Id = id;
-            Name = name;
+            PersonName = name;
             LastName = lastname;
             Email = email;
         }
@@ -18,9 +18,9 @@ namespace Domain.Users
         private User() { }
 
         public UserId Id { get; private set; } = default!;
-        public Name Name { get; private set; } = default!;
+        public PersonName PersonName { get; private set; } = default!;
         public LastName LastName { get; private set; } = default!;
-        public string FullName => $"{Name.Value} {LastName.Value}";
+        public string FullName => $"{PersonName.Value} {LastName.Value}";
         public Email Email { get; private set; } = default!;
         public List<TaskList> TaskLists { get; private set; } = [];
 
