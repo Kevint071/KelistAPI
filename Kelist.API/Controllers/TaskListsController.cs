@@ -1,4 +1,6 @@
 ﻿using Application.TaskLists.Commands.CreateTaskList;
+using Application.TaskLists.Commands.DeleteTaskList;
+using Application.TaskLists.Commands.UpdateTaskList;
 using Application.TaskLists.Queries.GetAllByUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -33,11 +35,34 @@ namespace Kelist.API.Controllers
             var createResult = await _mediator.Send(command);
 
             return createResult.Match(
-                _ => Ok(),
+                _ => Created(),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPut("{taskListId}")]
+        public async Task<IActionResult> Update(Guid userId, Guid taskListId, [FromBody] UpdateTaskListRequest request)
+        {
+            var command = new UpdateTaskListCommand(userId, taskListId, request.Name);
+            var updateResult = await _mediator.Send(command);
+            return updateResult.Match(
+                _ => NoContent(),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpDelete("{taskListId}")]
+        public async Task<IActionResult> Delete(Guid userId, Guid taskListId)
+        {
+            var command = new DeleteTaskListCommand(userId, taskListId);
+            var deleteResult = await _mediator.Send(command);
+            return deleteResult.Match(
+                _ => NoContent(),
                 errors => Problem(errors)
             );
         }
     }
 
     public record CreateTaskListRequest(string Name);
+    public record UpdateTaskListRequest(string Name);
 }
