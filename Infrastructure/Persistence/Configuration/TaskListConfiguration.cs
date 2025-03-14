@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.ToTable("TaskLists");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id);
-            builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
+            builder.Property(x => x.TaskListName).HasMaxLength(100).IsRequired();
             builder.HasMany(x => x.TaskItems)
                    .WithOne()
                    .HasForeignKey("TaskListId");

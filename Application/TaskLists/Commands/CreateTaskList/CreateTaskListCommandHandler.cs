@@ -1,8 +1,8 @@
-﻿using Application.Data.Interfaces;
+﻿using Application.Common;
+using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.TaskLists.Dtos;
 using Application.Users.Services;
-using Domain.TaskLists;
 using ErrorOr;
 using MediatR;
 
@@ -30,10 +30,15 @@ namespace Application.TaskLists.Commands.CreateTaskList
                 return Error.NotFound("User.NotFound", "The user with the provided Id was not found.");
             }
 
+            var validationResult = ValueObjectValidator.ValidateTaskListValueObjects(command.Name);
+            if (validationResult.IsError) return validationResult.Errors;
+
+            var name = validationResult.Value;
+
             var taskListDto = new TaskListDTO
             {
                 Id = Guid.NewGuid(),
-                Name = command.Name,
+                TaskListName = name.Value,
                 TaskItems = [] // Inicializar la lista vacía
             };
             _userRepository.AddTaskListToUser(command.UserId, taskListDto);
