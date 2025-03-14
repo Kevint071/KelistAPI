@@ -1,7 +1,6 @@
 using Application.TaskLists.Dtos;
 using Application.Tasks.Dtos;
 using Application.Users.Dtos;
-using Domain.Users;
 
 namespace Application.Data.Repositories
 {

@@ -31,7 +31,7 @@ namespace Kelist.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Guid userId, Guid taskListId, [FromBody] CreateTaskItemRequest request)
         {
-            var command = new CreateTaskItemCommand(userId, taskListId, request.Description, request.IsCompleted);
+            var command = new CreateTaskItemCommand(userId, taskListId, request.Description);
             var createResult = await _mediator.Send(command);
 
             return createResult.Match(
@@ -40,7 +40,7 @@ namespace Kelist.API.Controllers
             );
         }
 
-        public record CreateTaskItemRequest(string Description, bool IsCompleted);
+        public record CreateTaskItemRequest(string Description);
 
         [HttpPut("{taskItemId}")]
         public async Task<IActionResult> Update(Guid userId, Guid taskListId, Guid taskItemId, [FromBody] UpdateTaskItemRequest request)
