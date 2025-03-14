@@ -1,4 +1,5 @@
 using Application.TaskLists.Dtos;
+using Application.Tasks.Dtos;
 using Application.Users.Dtos;
 using Domain.Users;
 
@@ -15,6 +16,10 @@ namespace Application.Data.Repositories
 
         void AddTaskListToUser(Guid userId, TaskListDTO taskListDTO);
         void UpdateTaskList(Guid userId, TaskListDTO taskListDTO);
-        void DeleteTaskList(Guid userId, Guid TaskListId);
+        void DeleteTaskList(Guid userId, Guid taskListId);
+
+        void AddTaskItemToTaskList(Guid userId, Guid taskListId, TaskItemDTO taskItemDTO);
+        void UpdateTaskItem(Guid userId, Guid taskListId, TaskItemDTO taskItemDTO);
+        void DeleteTaskItem(Guid userId, Guid taskListId, Guid taskItemId);
     }
 }

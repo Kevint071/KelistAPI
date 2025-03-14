@@ -15,8 +15,8 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(x => x.Description).HasMaxLength(200).IsRequired();
             builder.Property(x => x.IsCompleted).IsRequired();
             builder.HasOne<TaskListDTO>()
-               .WithMany()
-               .HasForeignKey(x => x.TaskListId);
+               .WithMany(u => u.TaskItems)
+               .HasForeignKey("TaskListId").OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

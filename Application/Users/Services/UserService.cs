@@ -2,11 +2,13 @@
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.TaskLists.Dtos;
+using Application.Tasks.Dtos;
 using Application.Users.Dtos;
 using Domain.TaskLists;
 using Domain.Users;
-using Domain.ValueObjects.User;
+using Domain.Tasks;
 using Domain.ValueObjects.TaskList;
+using Domain.ValueObjects.User;
 
 namespace Application.Users.Services
 {
@@ -97,10 +99,19 @@ namespace Application.Users.Services
                 LastName.Create(userDto.LastName).Value,
                 Email.Create(userDto.Email).Value
             );
-            user.TaskLists.AddRange(userDto.TaskLists.Select(tl => new TaskList(
-                new TaskListId(tl.Id),
-                TaskListName.Create(tl.TaskListName).Value
-            )));
+            user.TaskLists.AddRange(userDto.TaskLists.Select(tl =>
+            {
+                var taskList = new TaskList(
+                    new TaskListId(tl.Id),
+                    TaskListName.Create(tl.TaskListName).Value
+                );
+                taskList.TaskItems.AddRange(tl.TaskItems.Select(ti => new TaskItem(
+                    new TaskItemId(ti.Id),
+                    ti.Description,
+                    ti.IsCompleted
+                    )));
+                return taskList;
+            }));
             return user;
         }
 
@@ -114,7 +125,13 @@ namespace Application.Users.Services
                 [.. user.TaskLists.Select(tl => new TaskListDTO
                 {
                     Id = tl.Id.Value,
-                    TaskListName = tl.TaskListName.Value
+                    TaskListName = tl.TaskListName.Value,
+                    TaskItems = [.. tl.TaskItems.Select(ti => new TaskItemDTO
+                    {
+                        Id = ti.Id.Value,
+                        Description = ti.Description,
+                        IsCompleted = ti.IsCompleted
+                    })]
                 })]
             );
         }
