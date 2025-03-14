@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id);
 
-            builder.Property(x => x.Name).HasMaxLength(50).IsRequired();
+            builder.Property(x => x.PersonName).HasMaxLength(50).IsRequired();
             builder.Property(x => x.LastName).HasMaxLength(50).IsRequired();
 
             builder.HasIndex(x => x.Email).IsUnique();
