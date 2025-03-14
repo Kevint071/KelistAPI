@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Application.Users.Dtos;
 using Application.TaskLists.Dtos;
+using Application.Tasks.Dtos;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -66,6 +67,21 @@ namespace Infrastructure.Persistence.Repositories
                     userDto.TaskLists.Remove(taskListToRemove);
                     // Si TaskListDTO es una entidad rastreada por EF, podemos marcarla como eliminada
                     _context.Entry(taskListToRemove).State = EntityState.Deleted;
+                }
+            }
+        }
+
+        public void AddTaskItemToTaskList(Guid userId, Guid taskListId, TaskItemDTO taskItemDTO)
+        {
+            var userDto = _context.Users.Include(u => u.TaskLists).SingleOrDefault(u => u.Id == userId);
+            if (userDto != null)
+            {
+                var existingTaskList = userDto.TaskLists.FirstOrDefault(t => t.Id == taskListId);
+                if (existingTaskList != null)
+                {
+                    existingTaskList.TaskItems.Add(taskItemDTO);
+                    // Asegurarnos de que EF Core la trate como una entidad nueva
+                    _context.Entry(taskItemDTO).State = EntityState.Added;
                 }
             }
         }
