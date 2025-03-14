@@ -14,5 +14,7 @@ namespace Application.Data.Repositories
         void Update(UserDTO user);
 
         void AddTaskListToUser(Guid userId, TaskListDTO taskListDTO);
+        void UpdateTaskList(Guid userId, TaskListDTO taskListDTO);
+        void DeleteTaskList(Guid userId, Guid TaskListId);
     }
 }

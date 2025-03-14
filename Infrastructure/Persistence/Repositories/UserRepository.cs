@@ -34,5 +34,40 @@ namespace Infrastructure.Persistence.Repositories
                 _context.Entry(taskListDto).State = EntityState.Added;
             }
         }
+
+        public void UpdateTaskList(Guid userId, TaskListDTO taskListDto)
+        {
+            var userDto = _context.Users
+                .Include(u => u.TaskLists)
+                .SingleOrDefault(u => u.Id == userId);
+
+            if (userDto != null)
+            {
+                var existingTaskList = userDto.TaskLists.FirstOrDefault(tl => tl.Id == taskListDto.Id);
+                if (existingTaskList != null)
+                {
+                    existingTaskList.TaskListName = taskListDto.TaskListName;
+                    // Si hay más propiedades como TaskItems, actualizarlas aquí
+                    _context.Entry(existingTaskList).State = EntityState.Modified;
+                }
+            }
+        }
+        public void DeleteTaskList(Guid userId, Guid taskListId)
+        {
+            var userDto = _context.Users
+                .Include(u => u.TaskLists)
+                .SingleOrDefault(u => u.Id == userId);
+
+            if (userDto != null)
+            {
+                var taskListToRemove = userDto.TaskLists.FirstOrDefault(tl => tl.Id == taskListId);
+                if (taskListToRemove != null)
+                {
+                    userDto.TaskLists.Remove(taskListToRemove);
+                    // Si TaskListDTO es una entidad rastreada por EF, podemos marcarla como eliminada
+                    _context.Entry(taskListToRemove).State = EntityState.Deleted;
+                }
+            }
+        }
     }
 }
