@@ -19,5 +19,7 @@ namespace Application.Data.Repositories
         void DeleteTaskList(Guid userId, Guid taskListId);
 
         void AddTaskItemToTaskList(Guid userId, Guid taskListId, TaskItemDTO taskItemDTO);
+        void UpdateTaskItem(Guid userId, Guid taskListId, TaskItemDTO taskItemDTO);
+        void DeleteTaskItem(Guid userId, Guid taskListId, Guid taskItemId);
     }
 }
