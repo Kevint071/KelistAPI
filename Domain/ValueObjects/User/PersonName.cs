@@ -1,15 +1,15 @@
 ﻿using System.Globalization;
 using ErrorOr;
 
-namespace Domain.ValueObjects
+namespace Domain.ValueObjects.User
 {
-    public partial record Name
+    public partial record PersonName
     {
         public string Value { get; init; }
 
-        private Name(string value) => Value = value;
+        private PersonName(string value) => Value = value;
 
-        public static ErrorOr<Name> Create(string value)
+        public static ErrorOr<PersonName> Create(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -28,7 +28,7 @@ namespace Domain.ValueObjects
                 return Error.Validation("User.Name", "El nombre solo puede contener letras.");
             }
 
-            return new Name(normalizedValue);
+            return new PersonName(normalizedValue);
         }
 
         private static string NormalizeName(string value)

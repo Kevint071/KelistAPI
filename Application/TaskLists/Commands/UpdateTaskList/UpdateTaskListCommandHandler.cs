@@ -5,26 +5,31 @@ using Application.TaskLists.Dtos;
 using ErrorOr;
 using MediatR;
 
-namespace Application.TaskLists.Commands.CreateTaskList
+namespace Application.TaskLists.Commands.UpdateTaskList
 {
-    internal sealed class CreateTaskListCommandHandler : IRequestHandler<CreateTaskListCommand, ErrorOr<Unit>>
+    internal sealed class UpdateTaskListCommandHandler : IRequestHandler<UpdateTaskListCommand, ErrorOr<Unit>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateTaskListCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+        public UpdateTaskListCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _unitOfWork = unitOfWork?? throw new ArgumentNullException(nameof(unitOfWork));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<ErrorOr<Unit>> Handle(CreateTaskListCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Unit>> Handle(UpdateTaskListCommand command, CancellationToken cancellationToken)
         {
             var userDto = await _userRepository.GetByIdAsync(command.UserId);
-
             if (userDto == null)
             {
                 return Error.NotFound("User.NotFound", "The user with the provided Id was not found.");
+            }
+
+            var taskListDto = userDto.TaskLists.FirstOrDefault(tl => tl.Id == command.TaskListId);
+            if (taskListDto == null)
+            {
+                return Error.NotFound("TaskList.NotFound", "The task list with the provided Id was not found.");
             }
 
             var validationResult = ValueObjectValidator.ValidateTaskListValueObjects(command.Name);
@@ -32,13 +37,14 @@ namespace Application.TaskLists.Commands.CreateTaskList
 
             var name = validationResult.Value;
 
-            var taskListDto = new TaskListDTO
+            var updatedTaskListDto = new TaskListDTO
             {
-                Id = Guid.NewGuid(),
+                Id = command.TaskListId,
                 TaskListName = name.Value,
-                TaskItems = [] // Inicializar la lista vacía
+                TaskItems = taskListDto.TaskItems
             };
-            _userRepository.AddTaskListToUser(command.UserId, taskListDto);
+
+            _userRepository.UpdateTaskList(command.UserId, updatedTaskListDto);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }

@@ -5,7 +5,8 @@ using Application.TaskLists.Dtos;
 using Application.Users.Dtos;
 using Domain.TaskLists;
 using Domain.Users;
-using Domain.ValueObjects;
+using Domain.ValueObjects.User;
+using Domain.ValueObjects.TaskList;
 
 namespace Application.Users.Services
 {
@@ -92,13 +93,13 @@ namespace Application.Users.Services
         {
             var user = new User(
                 new UserId(userDto.Id),
-                Name.Create(userDto.Name).Value,
+                PersonName.Create(userDto.PersonName).Value,
                 LastName.Create(userDto.LastName).Value,
                 Email.Create(userDto.Email).Value
             );
             user.TaskLists.AddRange(userDto.TaskLists.Select(tl => new TaskList(
                 new TaskListId(tl.Id),
-                tl.Name
+                TaskListName.Create(tl.TaskListName).Value
             )));
             return user;
         }
@@ -107,13 +108,13 @@ namespace Application.Users.Services
         {
             return new UserDTO(
                 user.Id.Value,
-                user.Name.Value,
+                user.PersonName.Value,
                 user.LastName.Value,
                 user.Email.Value,
                 [.. user.TaskLists.Select(tl => new TaskListDTO
                 {
                     Id = tl.Id.Value,
-                    Name = tl.Name
+                    TaskListName = tl.TaskListName.Value
                 })]
             );
         }

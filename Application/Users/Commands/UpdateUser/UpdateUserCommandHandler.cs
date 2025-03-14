@@ -10,13 +10,11 @@ namespace Application.Users.Commands.UpdateUser
     internal sealed class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ErrorOr<Unit>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IDomainEventPublisher _domainEventPublisher;
         private readonly UserService _userService;
 
-        public UpdateUserCommandHandler(IUserRepository userRepository, IDomainEventPublisher domainEventPublisher, UserService userService)
+        public UpdateUserCommandHandler(IUserRepository userRepository, UserService userService)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 

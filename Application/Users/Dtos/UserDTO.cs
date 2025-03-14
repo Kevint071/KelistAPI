@@ -4,7 +4,7 @@ namespace Application.Users.Dtos
 {
     public record UserDTO(
            Guid Id,
-           string Name,
+           string PersonName,
            string LastName,
            string Email,
            List<TaskListDTO>? TaskLists = null
@@ -12,6 +12,6 @@ namespace Application.Users.Dtos
     {
         private UserDTO() : this(Guid.Empty, string.Empty, string.Empty, string.Empty, null) { }
         public List<TaskListDTO> TaskLists { get; init; } = TaskLists ?? [];
-        public string FullName => $"{Name} {LastName}";
+        public string FullName => $"{PersonName} {LastName}";
     }
 }

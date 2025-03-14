@@ -43,7 +43,7 @@ namespace Kelist.API.Controllers
         {
             var createUserResult = await _mediator.Send(command);
             return createUserResult.Match(
-                user => Ok(),
+                user => Created(),
                 errors => Problem(errors));
         }
 
