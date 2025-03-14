@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using ErrorOr;
 
-namespace Domain.ValueObjects
+namespace Domain.ValueObjects.User
 {
     public partial record Email
     {
