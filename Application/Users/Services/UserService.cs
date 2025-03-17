@@ -9,10 +9,11 @@ using Domain.Users;
 using Domain.Tasks;
 using Domain.ValueObjects.TaskList;
 using Domain.ValueObjects.User;
+using Domain.ValueObjects.TaskItem;
 
 namespace Application.Users.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IDomainEventPublisher _domainEventPublisher;
@@ -23,23 +24,6 @@ namespace Application.Users.Services
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
-        }
-
-        public async Task<User?> GetByIdAsync(Guid id)
-        {
-            var userDto = await _userRepository.GetByIdAsync(id);
-            return userDto == null ? null : MapToDomain(userDto);
-        }
-
-        public async Task<List<User>> GetAllAsync()
-        {
-            var userDtos = await _userRepository.GetAll();
-            return [.. userDtos.Select(MapToDomain)];
-        }
-
-        public async Task<bool> ExistsAsync(Guid id)
-        {
-            return await _userRepository.ExistsAsync(id);
         }
 
         public async Task AddAsync(User user, CancellationToken cancellationToken)
@@ -107,7 +91,7 @@ namespace Application.Users.Services
                 );
                 taskList.TaskItems.AddRange(tl.TaskItems.Select(ti => new TaskItem(
                     new TaskItemId(ti.Id),
-                    ti.Description,
+                    Description.Create(ti.Description).Value,
                     ti.IsCompleted
                     )));
                 return taskList;
@@ -129,7 +113,7 @@ namespace Application.Users.Services
                     TaskItems = [.. tl.TaskItems.Select(ti => new TaskItemDTO
                     {
                         Id = ti.Id.Value,
-                        Description = ti.Description,
+                        Description = ti.Description.Value,
                         IsCompleted = ti.IsCompleted
                     })]
                 })]
