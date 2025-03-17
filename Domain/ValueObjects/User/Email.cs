@@ -31,9 +31,6 @@ namespace Domain.ValueObjects.User
             return new Email(value);
         }
 
-        // Método que asume que el valor proviene de la base de datos y es válido.
-        public static Email FromPersistence(string value) => new(value);
-
         [GeneratedRegex(Pattern)]
         private static partial Regex EmailRegex();
     }
