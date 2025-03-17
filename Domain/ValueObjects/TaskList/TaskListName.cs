@@ -14,14 +14,14 @@ namespace Domain.ValueObjects.TaskList
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                return Error.Validation("User.Name", "El nombre no puede estar vacío.");
+                return Error.Validation("TaskList.Name", "El nombre no puede estar vacío.");
             }
 
             var normalizedValue = NormalizeName(value);
 
             if (normalizedValue.Length > 100)
             {
-                return Error.Validation("User.Name", "El nombre debe tener menos de 100 caracteres.");
+                return Error.Validation("TaskList.Name", "El nombre debe tener menos de 100 caracteres.");
             }
 
             return new TaskListName(normalizedValue);
