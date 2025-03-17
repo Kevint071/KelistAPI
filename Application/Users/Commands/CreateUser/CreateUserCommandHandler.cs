@@ -10,9 +10,9 @@ namespace Application.Users.Commands.CreateUser
 {
     internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ErrorOr<Unit>>
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public CreateUserCommandHandler(UserService userService)
+        public CreateUserCommandHandler(IUserService userService)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
