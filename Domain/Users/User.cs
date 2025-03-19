@@ -24,11 +24,6 @@ namespace Domain.Users
         public Email Email { get; private set; } = default!;
         public List<TaskList> TaskLists { get; private set; } = [];
 
-        public void AddTaskList(TaskList taskList)
-        {
-            TaskLists.Add(taskList);
-        }
-
         public void NotifyCreate()
         {
             Raise(new UserCreatedEvent(Id.Value, FullName, Email.Value));

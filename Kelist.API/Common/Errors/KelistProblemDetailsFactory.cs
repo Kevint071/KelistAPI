@@ -70,6 +70,8 @@ namespace Kelist.API.Common.Errors
                 problemDetails.Type ??= clientErrorData.Link;
             }
 
+            problemDetails.Instance ??= httpContext.Request.Path + httpContext.Request.QueryString;
+
             var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
             if (traceId != null)

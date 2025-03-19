@@ -2,7 +2,7 @@
 using ErrorOr;
 using MediatR;
 
-namespace Application.Tasks.Queries.GetAllByTaskListId
+namespace Application.Tasks.Queries.GetAllByTaskList
 {
-    public record GetAllTaskItemsByTaskListQuery(Guid UserId, Guid TaskListId) : IRequest<ErrorOr<List<TaskItemDTO>>>;
+    public record GetAllTaskItemsByTaskListQuery(Guid UserId, Guid TaskListId) : IRequest<ErrorOr<IReadOnlyList<TaskItemDTO>>>;
 }

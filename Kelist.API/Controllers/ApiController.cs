@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ErrorOr;
+﻿using ErrorOr;
 using Kelist.API.Common.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Kelist.API.Controllers
@@ -10,7 +10,7 @@ namespace Kelist.API.Controllers
     {
         protected ActionResult Problem(List<Error> errors)
         {
-            if (errors.Count is 0) return Problem();
+            if (errors == null || errors.Count is 0) return Problem();
 
             if (errors.All(error => error.Type == ErrorType.Validation)) return ValidationProblem(errors);
 
@@ -26,10 +26,13 @@ namespace Kelist.API.Controllers
                 ErrorType.Validation => StatusCodes.Status400BadRequest,
                 ErrorType.NotFound => StatusCodes.Status404NotFound,
                 _ => StatusCodes.Status500InternalServerError
-
             };
 
-            return Problem(statusCode: statusCode, title: error.Description);
+            string? instance = HttpContext?.Request != null
+                ? HttpContext.Request.Path + HttpContext.Request.QueryString
+                : null;
+
+            return Problem(statusCode: statusCode, title: error.Description, instance: instance);
         }
 
         private ActionResult ValidationProblem(List<Error> errors)
@@ -39,7 +42,10 @@ namespace Kelist.API.Controllers
             {
                 modelStateDictionary.AddModelError(error.Code, error.Description);
             }
-            return ValidationProblem(modelStateDictionary);
+            return ValidationProblem(
+                modelStateDictionary: modelStateDictionary,
+                instance: HttpContext.Request.Path + HttpContext.Request.QueryString
+            );
         }
     }
 }
