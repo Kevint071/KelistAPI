@@ -46,7 +46,10 @@ namespace Kelist.Tests.Unit.Domain.TaskItem
         public void Constructor_WithNullDescription_ThrowsArgumentNullException()
         {
             // Act & Assert
-            Action act = () => new DomainTasks.TaskItem(_taskItemId, null!);
+            Action act = () =>
+            {
+                DomainTasks.TaskItem taskItem = new(_taskItemId, null!);
+            };
             act.Should().Throw<ArgumentNullException>()
                .WithParameterName("description");
         }
@@ -59,7 +62,10 @@ namespace Kelist.Tests.Unit.Domain.TaskItem
             var description = descriptionResult.Value;
 
             // Act & Assert
-            Action act = () => new DomainTasks.TaskItem(null!, description);
+            Action act = () =>
+            {
+                DomainTasks.TaskItem taskItem = new(null!, description);
+            };
             act.Should().Throw<ArgumentNullException>()
                .WithParameterName("id");
         }
