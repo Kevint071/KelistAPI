@@ -50,7 +50,7 @@ namespace Kelist.Tests.Unit.Application.Users.Queries
 
             // Assert
             Assert.True(result.IsError);
-            Assert.Equal(Error.NotFound("User.NotFound", "The user with the provide Id was not found."), result.FirstError);
+            Assert.Equal(Error.NotFound("User.NotFound", "The user with the provided Id was not found."), result.FirstError);
         }
     }
 }
