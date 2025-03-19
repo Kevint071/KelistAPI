@@ -22,7 +22,7 @@ namespace Application
 
             services.AddValidatorsFromAssemblyContaining<ApplicationAssemblyReference>();
             services.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
-            services.AddScoped<UserService>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

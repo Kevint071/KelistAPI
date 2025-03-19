@@ -1,5 +1,6 @@
 ﻿using Application.Data.Interfaces;
 using Application.Data.Repositories;
+using Domain.DomainErrors;
 using ErrorOr;
 using MediatR;
 
@@ -19,22 +20,13 @@ namespace Application.Tasks.Commands.DeleteTaskItem
         public async Task<ErrorOr<Unit>> Handle(DeleteTaskItemCommand command, CancellationToken cancellationToken)
         {
             var userDto = await _userRepository.GetByIdAsync(command.UserId);
-            if (userDto == null)
-            {
-                return Error.NotFound("User.NotFound", "The user with the provided Id was not found.");
-            }
+            if (userDto == null) return Errors.User.NotFound;
 
             var taskListDto = userDto.TaskLists.FirstOrDefault(tl => tl.Id == command.TaskListId);
-            if (taskListDto == null)
-            {
-                return Error.NotFound("TaskList.NotFound", "The task list with the provided Id was not found.");
-            }
+            if (taskListDto == null) return Errors.TaskList.NotFound;
 
             var taskItemDto = taskListDto.TaskItems.FirstOrDefault(ti => ti.Id == command.TaskItemId);
-            if (taskItemDto == null)
-            {
-                return Error.NotFound("TaskItem.NotFound", "The task item with the provided Id was not found.");
-            }
+            if (taskItemDto == null) return Errors.TaskItems.NotFound;
 
             _userRepository.DeleteTaskItem(command.UserId, command.TaskListId, command.TaskItemId);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
