@@ -25,7 +25,6 @@ namespace Infrastructure.Services
             services.AddScoped<IApplicationDbContext>(sp =>sp.GetRequiredService<ApplicationDbContext>());
             services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<ITaskListRepository, TaskListRepository>();
 
             return services;
         }
