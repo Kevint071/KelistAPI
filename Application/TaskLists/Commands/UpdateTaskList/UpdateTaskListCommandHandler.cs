@@ -2,12 +2,13 @@
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.TaskLists.Dtos;
+using Domain.DomainErrors;
 using ErrorOr;
 using MediatR;
 
 namespace Application.TaskLists.Commands.UpdateTaskList
 {
-    internal sealed class UpdateTaskListCommandHandler : IRequestHandler<UpdateTaskListCommand, ErrorOr<Unit>>
+    internal sealed class UpdateTaskListCommandHandler : IRequestHandler<UpdateTaskListCommand, ErrorOr<TaskListDTO>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -18,19 +19,13 @@ namespace Application.TaskLists.Commands.UpdateTaskList
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<ErrorOr<Unit>> Handle(UpdateTaskListCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<TaskListDTO>> Handle(UpdateTaskListCommand command, CancellationToken cancellationToken)
         {
             var userDto = await _userRepository.GetByIdAsync(command.UserId);
-            if (userDto == null)
-            {
-                return Error.NotFound("User.NotFound", "The user with the provided Id was not found.");
-            }
+            if (userDto == null) return Errors.User.NotFound;
 
             var taskListDto = userDto.TaskLists.FirstOrDefault(tl => tl.Id == command.TaskListId);
-            if (taskListDto == null)
-            {
-                return Error.NotFound("TaskList.NotFound", "The task list with the provided Id was not found.");
-            }
+            if (taskListDto == null) return Errors.TaskList.NotFound;
 
             var validationResult = ValueObjectValidator.ValidateTaskListValueObjects(command.Name);
             if (validationResult.IsError) return validationResult.Errors;
@@ -46,7 +41,7 @@ namespace Application.TaskLists.Commands.UpdateTaskList
 
             _userRepository.UpdateTaskList(command.UserId, updatedTaskListDto);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return Unit.Value;
+            return updatedTaskListDto;
         }
     }
 }
