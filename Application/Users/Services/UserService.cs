@@ -26,7 +26,7 @@ namespace Application.Users.Services
             _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
         }
 
-        public async Task AddAsync(User user, CancellationToken cancellationToken)
+        public async Task<UserDTO> AddAsync(User user, CancellationToken cancellationToken)
         {
             var userDto = MapToDto(user);
             _userRepository.Add(userDto);
@@ -40,9 +40,10 @@ namespace Application.Users.Services
                 await _domainEventPublisher.PublishEventAsync(events, cancellationToken);
                 user.ClearDomainEvents();
             }
+            return userDto;
         }
 
-        public async Task UpdateAsync(User user, CancellationToken cancellationToken)
+        public async Task<UserDTO> UpdateAsync(User user, CancellationToken cancellationToken)
         {
             var userDto = MapToDto(user);
             _userRepository.Update(userDto);
@@ -57,6 +58,7 @@ namespace Application.Users.Services
                 await _domainEventPublisher.PublishEventAsync(events, cancellationToken);
                 user.ClearDomainEvents();
             }
+            return userDto;
         }
 
         public async Task DeleteAsync(UserDTO userDto, CancellationToken cancellationToken)
