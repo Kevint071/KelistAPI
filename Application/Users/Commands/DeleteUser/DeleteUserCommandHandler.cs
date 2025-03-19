@@ -1,6 +1,7 @@
 ﻿using Application.Data.Repositories;
 using Application.Users.Dtos;
 using Application.Users.Services;
+using Domain.DomainErrors;
 using ErrorOr;
 using MediatR;
 
@@ -19,10 +20,7 @@ namespace Application.Users.Commands.DeleteUser
 
         public async Task<ErrorOr<Unit>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
         {
-            if (await _userRepository.GetByIdAsync(command.Id) is not UserDTO userDto)
-            {
-                return Error.NotFound("User.NotFound", "The user with the provided Id was not found.");
-            }
+            if (await _userRepository.GetByIdAsync(command.Id) is not UserDTO userDto) return Errors.User.NotFound;
 
             await _userService.DeleteAsync(userDto, cancellationToken);
 
