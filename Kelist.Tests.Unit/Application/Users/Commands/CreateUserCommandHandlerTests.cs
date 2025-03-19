@@ -1,4 +1,5 @@
 ﻿using Application.Users.Commands.CreateUser;
+using Application.Users.Dtos;
 using Application.Users.Services;
 using Domain.Users;
 using FluentAssertions;
@@ -22,15 +23,16 @@ namespace Kelist.Tests.Unit.Application.Users.Commands
         {
             // Arrange
             var command = new CreateUserCommand("John", "Doe", "john.doe@example.com");
+            var userDto = new UserDTO(Guid.NewGuid(), "John", "Doe", "john.doe@example.com");
             _userServiceMock.Setup(s => s.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-                           .Returns(Task.CompletedTask);
+                           .ReturnsAsync(userDto);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             result.IsError.Should().BeFalse();
-            result.Value.Should().Be(MediatR.Unit.Value);
+            result.Value.Should().BeOfType<UserDTO>();
             _userServiceMock.Verify(s => s.AddAsync(It.Is<User>(u =>
                 u.PersonName.Value == "John" &&
                 u.LastName.Value == "Doe" &&
