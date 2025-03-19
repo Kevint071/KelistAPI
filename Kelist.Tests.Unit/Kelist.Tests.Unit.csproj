@@ -23,15 +23,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Kelist.API\Kelist.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Application\Tasks\Commands\" />
-    <Folder Include="Application\Tasks\Queries\" />
   </ItemGroup>
 
 </Project>
