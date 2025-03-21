@@ -6,6 +6,7 @@ using Domain.DomainErrors;
 using Domain.Users;
 using ErrorOr;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Users.Commands.UpdateUser
 {
@@ -22,13 +23,30 @@ namespace Application.Users.Commands.UpdateUser
 
         public async Task<ErrorOr<UserDTO>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
         {
-            if (!await _userRepository.ExistsAsync(command.Id)) return Errors.User.NotFound;
+            var existingUserDto = await _userRepository.GetByIdAsync(command.Id);
+            if (existingUserDto == null) return Errors.User.NotFound;
 
             var validationResult = ValueObjectValidator.ValidateUserValueObjects(command.Email, command.Name, command.LastName);
             if (validationResult.IsError) return validationResult.Errors;
 
             var (name, lastName, email) = validationResult.Value;
-            var user = new User(new UserId(command.Id), name, lastName, email);
+            string passwordHash = existingUserDto.PasswordHash;
+
+            // Si se proporciona una nueva contraseña, hashearla
+            if (!string.IsNullOrEmpty(command.Password))
+            {
+                passwordHash = new PasswordHasher<User>().HashPassword(null!, command.Password);
+            }
+
+            var user = new User(
+                new UserId(command.Id),
+                name,
+                lastName,
+                email,
+                passwordHash,
+                existingUserDto.RefreshToken,
+                existingUserDto.RefreshTokenExpiryTime
+            );
 
             var userDto = await _userService.UpdateAsync(user, cancellationToken);
             return userDto;

@@ -21,6 +21,8 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<List<UserDTO>> GetAll() => await _context.Users.ToListAsync();
         public async Task<bool> ExistsAsync(Guid id) => await _context.Users.AnyAsync(c => c.Id == id);
         public async Task<UserDTO?> GetByIdAsync(Guid id) => await _context.Users.Include(x => x.TaskLists).ThenInclude(tl => tl.TaskItems).SingleOrDefaultAsync(c => c.Id == id);
+        public async Task<bool> ExistsByEmailAsync(string email) => await _context.Users.AnyAsync(u => u.Email == email);
+        public async Task<UserDTO?> GetByEmailAsync(string email) => await _context.Users.Include(x => x.TaskLists).ThenInclude(tl => tl.TaskItems).SingleOrDefaultAsync(u => u.Email == email);
 
         public void AddTaskListToUser(Guid userId, TaskListDTO taskListDto)
         {

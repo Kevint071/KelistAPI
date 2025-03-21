@@ -1,7 +1,11 @@
+using System.Text;
 using Application;
 using Infrastructure.Services;
 using Kelist.API.Extensions;
 using Kelist.API.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 namespace Kelist.API
 {
@@ -13,7 +17,30 @@ namespace Kelist.API
 
             builder.Services.AddPresentation()
                             .AddInfrastructure(builder.Configuration)
-                            .AddApplication();                            
+                            .AddApplication();
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+                        ValidateIssuerSigningKey = true
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
             var app = builder.Build();
 
@@ -24,6 +51,7 @@ namespace Kelist.API
                 {
                     options.SwaggerEndpoint("/openapi/v1.json", "v1");
                 });
+                app.MapScalarApiReference();
                 app.ApplyMigrations();
             }
 

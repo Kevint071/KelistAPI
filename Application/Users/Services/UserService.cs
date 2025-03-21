@@ -83,7 +83,10 @@ namespace Application.Users.Services
                 new UserId(userDto.Id),
                 PersonName.Create(userDto.PersonName).Value,
                 LastName.Create(userDto.LastName).Value,
-                Email.Create(userDto.Email).Value
+                Email.Create(userDto.Email).Value,
+                userDto.PasswordHash,
+                userDto.RefreshToken,
+                userDto.RefreshTokenExpiryTime
             );
             user.TaskLists.AddRange(userDto.TaskLists.Select(tl =>
             {
@@ -108,6 +111,9 @@ namespace Application.Users.Services
                 user.PersonName.Value,
                 user.LastName.Value,
                 user.Email.Value,
+                user.PasswordHash,
+                user.RefreshToken,
+                user.RefreshTokenExpiryTime,
                 [.. user.TaskLists.Select(tl => new TaskListDTO
                 {
                     Id = tl.Id.Value,
