@@ -14,10 +14,13 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(x => x.PersonName).HasMaxLength(50).IsRequired();
             builder.Property(x => x.LastName).HasMaxLength(50).IsRequired();
-
             builder.HasIndex(x => x.Email).IsUnique();
-            builder.Property(x => x.Email)
-                 .IsRequired();
+            builder.Property(x => x.Email).IsRequired();
+
+            builder.Property(x => x.PasswordHash).IsRequired();
+            builder.Property(x => x.RefreshToken);
+            builder.Property(x => x.RefreshTokenExpiryTime);
+
             builder.HasMany(x => x.TaskLists).WithOne().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade);
             builder.Metadata.SetPropertyAccessMode(PropertyAccessMode.Property);
         }

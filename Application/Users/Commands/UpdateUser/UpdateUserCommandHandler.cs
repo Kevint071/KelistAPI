@@ -1,7 +1,7 @@
 ﻿using Application.Common;
+using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.Users.Dtos;
-using Application.Users.Services;
 using Domain.DomainErrors;
 using Domain.Users;
 using ErrorOr;
@@ -12,26 +12,42 @@ namespace Application.Users.Commands.UpdateUser
     internal sealed class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ErrorOr<UserDTO>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserService _userService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDomainEventPublisher _domainEventPublisher;
 
-        public UpdateUserCommandHandler(IUserRepository userRepository, IUserService userService)
+        public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IDomainEventPublisher domainEventPublisher)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
         }
 
         public async Task<ErrorOr<UserDTO>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
         {
-            if (!await _userRepository.ExistsAsync(command.Id)) return Errors.User.NotFound;
+            var existingUserDto = await _userRepository.GetByIdAsync(command.Id);
+            if (existingUserDto == null) return Errors.User.NotFound;
 
             var validationResult = ValueObjectValidator.ValidateUserValueObjects(command.Email, command.Name, command.LastName);
             if (validationResult.IsError) return validationResult.Errors;
 
             var (name, lastName, email) = validationResult.Value;
-            var user = new User(new UserId(command.Id), name, lastName, email);
+            string passwordHash = existingUserDto.PasswordHash;
 
-            var userDto = await _userService.UpdateAsync(user, cancellationToken);
-            return userDto;
+            var user = new User(new UserId(command.Id), name, lastName, email, passwordHash, existingUserDto.RefreshToken, existingUserDto.RefreshTokenExpiryTime);
+            existingUserDto.UpdateProfile(name.Value, lastName.Value, email.Value);
+            
+            user.NotifyUpdate();
+            var events = user.GetDomainEvents();
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            if (events.Count != 0)
+            {
+                await _domainEventPublisher.PublishEventAsync(events, cancellationToken);
+                user.ClearDomainEvents();
+            }
+
+            return existingUserDto;
         }
     }
 }

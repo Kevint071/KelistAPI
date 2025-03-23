@@ -7,12 +7,15 @@ namespace Domain.Users
 {
     public sealed class User : AggregateRoot
     {
-        public User(UserId id, PersonName name, LastName lastname, Email email)
+        public User(UserId id, PersonName name, LastName lastname, Email email, string passwordHash, string? refreshToken = null, DateTime? refreshTokenExpiryTime = null)
         {
             Id = id;
             PersonName = name;
             LastName = lastname;
             Email = email;
+            PasswordHash = passwordHash;
+            RefreshToken = refreshToken;
+            RefreshTokenExpiryTime = refreshTokenExpiryTime;
         }
 
         private User() { }
@@ -22,7 +25,16 @@ namespace Domain.Users
         public LastName LastName { get; private set; } = default!;
         public string FullName => $"{PersonName.Value} {LastName.Value}";
         public Email Email { get; private set; } = default!;
+        public string PasswordHash { get; private set; } = default!;
+        public string? RefreshToken { get; private set; }
+        public DateTime? RefreshTokenExpiryTime { get; private set; }
         public List<TaskList> TaskLists { get; private set; } = [];
+
+        public void SetRefreshToken(string refreshToken, DateTime expiryTime)
+        {
+            RefreshToken = refreshToken;
+            RefreshTokenExpiryTime = expiryTime;
+        }
 
         public void NotifyCreate()
         {

@@ -14,6 +14,8 @@ namespace Infrastructure.Services
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddPersistence(configuration);
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IPasswordService, PasswordService>();
             return services;
         }
 

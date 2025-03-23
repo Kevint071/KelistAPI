@@ -9,6 +9,8 @@ namespace Application.Data.Repositories
         Task<List<UserDTO>> GetAll();
         Task<UserDTO?> GetByIdAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);
+        Task<bool> ExistsByEmailAsync(string email);
+        Task<UserDTO?> GetByEmailAsync(string email);
         void Add(UserDTO user);
         void Delete(UserDTO user);
         void Update(UserDTO user);
