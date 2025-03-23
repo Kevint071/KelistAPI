@@ -2,22 +2,45 @@
 
 namespace Application.Users.Dtos
 {
-    public record UserDTO(
-           Guid Id,
-           string PersonName,
-           string LastName,
-           string Email,
-           string PasswordHash,
-           string? RefreshToken = null,
-           DateTime? RefreshTokenExpiryTime = null,
-           List<TaskListDTO>? TaskLists = null
-       )
+    public class UserDTO
     {
-        private UserDTO() : this(Guid.Empty, string.Empty, string.Empty, string.Empty, string.Empty, null, null, null) { }
-        public List<TaskListDTO> TaskLists { get; init; } = TaskLists ?? [];
+        public Guid Id { get; private set; }
+        public string PersonName { get; private set; }
+        public string LastName { get; private set; }
         public string FullName => $"{PersonName} {LastName}";
-        public string? RefreshToken { get; set; } = RefreshToken;
-        public DateTime? RefreshTokenExpiryTime { get; set; } = RefreshTokenExpiryTime;
+        public string Email { get; private set; }
+        public string PasswordHash { get; private set; }
+        public string? RefreshToken { get; private set; }
+        public DateTime? RefreshTokenExpiryTime { get; private set; }
+        public List<TaskListDTO> TaskLists { get; init; } = [];
+
+        public UserDTO(Guid id, string personName, string lastName, string email, string passwordHash, string? refreshToken = null, DateTime? refreshTokenExpiryTime = null, List<TaskListDTO>? taskLists = null)
+        {
+            Id = id;
+            PersonName = personName;
+            LastName = lastName;
+            Email = email;
+            PasswordHash = passwordHash;
+            RefreshToken = refreshToken;
+            RefreshTokenExpiryTime = refreshTokenExpiryTime;
+            TaskLists = taskLists ?? [];
+        }
+
+        // Constructor privado para EF Core
+        private UserDTO() : this(Guid.Empty, string.Empty, string.Empty, string.Empty, string.Empty) { }
+
+        public void UpdateProfile(string name, string lastName, string email)
+        {
+            PersonName = name;
+            LastName = lastName;
+            Email = email;
+        }
+
+        public void UpdateTokens(string? refreshToken, DateTime? refreshTokenExpiryTime)
+        {
+            RefreshToken = refreshToken;
+            RefreshTokenExpiryTime = refreshTokenExpiryTime;
+        }
     }
 
     public record RegisterUserDto(string Name, string LastName, string Email, string Password);
