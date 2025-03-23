@@ -15,6 +15,7 @@ namespace Infrastructure.Services
         {
             services.AddPersistence(configuration);
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IPasswordService, PasswordService>();
             return services;
         }
 
