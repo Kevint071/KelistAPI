@@ -1,8 +1,9 @@
-﻿using FluentValidation;
+﻿using Application.Common.Validations;
+using FluentValidation;
 
 namespace Application.Users.Commands.CreateUser
 {
-    public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+    public partial class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     {
         public CreateUserCommandValidator()
         {
@@ -16,9 +17,12 @@ namespace Application.Users.Commands.CreateUser
                 .WithName("Last Name");
 
             RuleFor(r => r.Email)
-                .NotEmpty()
-                .EmailAddress()
-                .MaximumLength(255);
+                .NotEmpty().WithMessage("El email es obligatorio.")
+                .EmailAddress().WithMessage("Se requiere un email válido.")
+                .MaximumLength(255).WithMessage("El email no debe exceder los 255 caracteres.");
+
+            RuleFor(r => r.Password)
+                .ApplyPasswordRules();
         }
     }
 }
