@@ -1,24 +1,25 @@
 ﻿using Application.Common;
+using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.Users.Dtos;
-using Application.Users.Services;
 using Domain.DomainErrors;
 using Domain.Users;
 using ErrorOr;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace Application.Users.Commands.UpdateUser
 {
     internal sealed class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ErrorOr<UserDTO>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserService _userService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDomainEventPublisher _domainEventPublisher;
 
-        public UpdateUserCommandHandler(IUserRepository userRepository, IUserService userService)
+        public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IDomainEventPublisher domainEventPublisher)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
         }
 
         public async Task<ErrorOr<UserDTO>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
@@ -32,24 +33,21 @@ namespace Application.Users.Commands.UpdateUser
             var (name, lastName, email) = validationResult.Value;
             string passwordHash = existingUserDto.PasswordHash;
 
-            // Si se proporciona una nueva contraseña, hashearla
-            if (!string.IsNullOrEmpty(command.Password))
+            var user = new User(new UserId(command.Id), name, lastName, email, passwordHash, existingUserDto.RefreshToken, existingUserDto.RefreshTokenExpiryTime);
+            existingUserDto.UpdateProfile(name.Value, lastName.Value, email.Value);
+            
+            user.NotifyUpdate();
+            var events = user.GetDomainEvents();
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            if (events.Count != 0)
             {
-                passwordHash = new PasswordHasher<User>().HashPassword(null!, command.Password);
+                await _domainEventPublisher.PublishEventAsync(events, cancellationToken);
+                user.ClearDomainEvents();
             }
 
-            var user = new User(
-                new UserId(command.Id),
-                name,
-                lastName,
-                email,
-                passwordHash,
-                existingUserDto.RefreshToken,
-                existingUserDto.RefreshTokenExpiryTime
-            );
-
-            var userDto = await _userService.UpdateAsync(user, cancellationToken);
-            return userDto;
+            return existingUserDto;
         }
     }
 }
