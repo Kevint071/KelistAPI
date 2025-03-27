@@ -31,6 +31,7 @@ namespace Kelist.API.Controllers
                 errors => Problem(errors)
             );
         }
+
         /// <summary>
         /// Obtiene un usuario por su ID.
         /// </summary>
@@ -82,7 +83,6 @@ namespace Kelist.API.Controllers
                 errors => Problem(errors));
         }
         public record UpdateUserRequest(string Name, string LastName, string Email);
-
 
         /// <summary>
         /// Elimina un usuario.
