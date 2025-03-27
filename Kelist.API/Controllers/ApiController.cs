@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+﻿using System.Security.Claims;
+using ErrorOr;
 using Kelist.API.Common.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -47,6 +48,13 @@ namespace Kelist.API.Controllers
                 modelStateDictionary: modelStateDictionary,
                 instance: HttpContext.Request.Path + HttpContext.Request.QueryString
             );
+        }
+
+        protected bool IsAuthorizedForUser(Guid userId)
+        {
+            var claimValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No se encontró el ID del usuario autenticado.");
+            var authenticatedUserId = Guid.Parse(claimValue);
+            return authenticatedUserId == userId;
         }
     }
 }

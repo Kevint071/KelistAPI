@@ -4,12 +4,14 @@ using Application.TaskLists.Commands.UpdateTaskList;
 using Application.TaskLists.Dtos;
 using Application.TaskLists.Queries.GetAllByUser;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kelist.API.Controllers
 {
     [Route("users/{userId}/tasklists")]
     [Produces("application/json")]
+    [Authorize]
     public class TaskListsController(ISender mediator) : ApiController
     {
         private readonly ISender _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -24,6 +26,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll(Guid userId)
         {
+            if (!IsAuthorizedForUser(userId)) return Forbid();
             var taskListsResult = await _mediator.Send(new GetAllTaskListsByUserQuery(userId));
 
             return taskListsResult.Match(
@@ -43,6 +46,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(Guid userId, [FromBody] CreateTaskListRequest request)
         {
+            if (!IsAuthorizedForUser(userId)) return Forbid();
             var command = new CreateTaskListCommand(userId, request.Name);
             var createResult = await _mediator.Send(command);
 
@@ -64,6 +68,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(Guid userId, Guid taskListId, [FromBody] UpdateTaskListRequest request)
         {
+            if (!IsAuthorizedForUser(userId)) return Forbid();
             var command = new UpdateTaskListCommand(userId, taskListId, request.Name);
             var updateResult = await _mediator.Send(command);
             return updateResult.Match(
@@ -82,6 +87,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid userId, Guid taskListId)
         {
+            if (!IsAuthorizedForUser(userId)) return Forbid();
             var command = new DeleteTaskListCommand(userId, taskListId);
             var deleteResult = await _mediator.Send(command);
             return deleteResult.Match(
