@@ -5,6 +5,7 @@ using Application.Users.Dtos;
 using Application.Users.Queries.GetAll;
 using Application.Users.Queries.GetById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kelist.API.Controllers
@@ -20,6 +21,7 @@ namespace Kelist.API.Controllers
         /// </summary>
         /// <returns>Una lista de usuarios.</returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(List<UserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll()
@@ -38,10 +40,12 @@ namespace Kelist.API.Controllers
         /// <param name="id">ID del usuario.</param>
         /// <returns>Información del usuario.</returns>
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,User")]
         [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
+            if (!IsAuthorizedForUsers(id)) return Forbid();
             var userResult = await _mediator.Send(new GetUserByIdQuery(id));
             return userResult.Match(
                 user => Ok(user),
@@ -54,6 +58,7 @@ namespace Kelist.API.Controllers
         /// <param name="command">Datos del usuario a crear.</param>
         /// <returns>El usuario creado.</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(UserDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateUserCommand command)
@@ -70,11 +75,13 @@ namespace Kelist.API.Controllers
         /// <param name="id">ID del usuario a actualizar.</param>
         /// <param name="request">Datos actualizados del usuario.</param>
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,User")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserRequest request)
         {
+            if (!IsAuthorizedForUsers(id)) return Forbid();
             var updatedCommand = new UpdateUserCommand(id, request.Name, request.LastName, request.Email);
             var updateUserResult = await _mediator.Send(updatedCommand);
 
@@ -89,10 +96,12 @@ namespace Kelist.API.Controllers
         /// </summary>
         /// <param name="id">ID del usuario a eliminar.</param>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,User")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
+            if (!IsAuthorizedForUsers(id)) return Forbid();
             var deleteUserResult = await _mediator.Send(new DeleteUserCommand(id));
             return deleteUserResult.Match(
                 customerId => NoContent(),

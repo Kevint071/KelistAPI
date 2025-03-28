@@ -27,7 +27,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll(Guid userId, Guid taskListId)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var taskItemsResult = await _mediator.Send(new GetAllTaskItemsByTaskListQuery(userId, taskListId));
 
             return taskItemsResult.Match(
@@ -48,7 +48,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(Guid userId, Guid taskListId, [FromBody] CreateTaskItemRequest request)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var command = new CreateTaskItemCommand(userId, taskListId, request.Description);
             var createResult = await _mediator.Send(command);
 
@@ -71,7 +71,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(Guid userId, Guid taskListId, Guid taskItemId, [FromBody] UpdateTaskItemRequest request)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var command = new UpdateTaskItemCommand(userId, taskListId, taskItemId, request.Description, request.IsCompleted);
             var updateResult = await _mediator.Send(command);
             return updateResult.Match(
@@ -91,7 +91,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid userId, Guid taskListId, Guid taskItemId)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var command = new DeleteTaskItemCommand(userId, taskListId, taskItemId);
             var deleteResult = await _mediator.Send(command);
             return deleteResult.Match(
