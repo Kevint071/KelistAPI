@@ -1,15 +1,15 @@
 ﻿using System.Security.Claims;
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
-using Application.Users.Dtos;
 using Domain.DomainErrors;
 using ErrorOr;
 using MediatR;
 using Application.Common.Mappers;
+using Application.AuthUsers.Dtos;
 
 namespace Application.AuthUsers.Command.LoginUser
 {
-    internal sealed class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, ErrorOr<TokenResponseDto>>
+    internal sealed class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, ErrorOr<TokenResponseDTO>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -24,7 +24,7 @@ namespace Application.AuthUsers.Command.LoginUser
             _passwordService = passwordService ?? throw new ArgumentNullException(nameof(passwordService));
         }
 
-        public async Task<ErrorOr<TokenResponseDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<TokenResponseDTO>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var userDto = await _userRepository.GetByEmailAsync(request.Email);
             if (userDto == null || !_passwordService.VerifyPassword(request.Password, userDto.PasswordHash)) return Errors.User.InvalidCredentials;
@@ -47,7 +47,7 @@ namespace Application.AuthUsers.Command.LoginUser
 
             _userRepository.Update(userDto);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return new TokenResponseDto(accessToken, refreshToken);
+            return new TokenResponseDTO(accessToken, refreshToken);
         }
     }
 }
