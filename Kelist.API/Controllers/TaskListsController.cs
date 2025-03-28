@@ -22,11 +22,11 @@ namespace Kelist.API.Controllers
         /// <param name="userId">ID del usuario.</param>
         /// <returns>Una lista de listas de tareas.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(List<TaskListDTO>), StatusCodes.Status200OK)] // Ajusta TaskListDto según tu DTO real
+        [ProducesResponseType(typeof(List<TaskListDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll(Guid userId)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var taskListsResult = await _mediator.Send(new GetAllTaskListsByUserQuery(userId));
 
             return taskListsResult.Match(
@@ -42,11 +42,11 @@ namespace Kelist.API.Controllers
         /// <param name="request">Datos de la lista de tareas a crear.</param>
         /// <returns>La lista de tareas creada.</returns>
         [HttpPost]
-        [ProducesResponseType(typeof(TaskListDTO), StatusCodes.Status201Created)] // Ajusta TaskListDto según tu DTO real
+        [ProducesResponseType(typeof(TaskListDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(Guid userId, [FromBody] CreateTaskListRequest request)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var command = new CreateTaskListCommand(userId, request.Name);
             var createResult = await _mediator.Send(command);
 
@@ -63,12 +63,12 @@ namespace Kelist.API.Controllers
         /// <param name="taskListId">ID de la lista de tareas a actualizar.</param>
         /// <param name="request">Datos actualizados de la lista de tareas.</param>
         [HttpPut("{taskListId}")]
-        [ProducesResponseType(typeof(TaskListDTO), StatusCodes.Status200OK)] // Ajusta TaskListDto según tu DTO real
+        [ProducesResponseType(typeof(TaskListDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(Guid userId, Guid taskListId, [FromBody] UpdateTaskListRequest request)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var command = new UpdateTaskListCommand(userId, taskListId, request.Name);
             var updateResult = await _mediator.Send(command);
             return updateResult.Match(
@@ -87,7 +87,7 @@ namespace Kelist.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid userId, Guid taskListId)
         {
-            if (!IsAuthorizedForUser(userId)) return Forbid();
+            if (!IsAuthorizedForUsers(userId)) return Forbid();
             var command = new DeleteTaskListCommand(userId, taskListId);
             var deleteResult = await _mediator.Send(command);
             return deleteResult.Match(
