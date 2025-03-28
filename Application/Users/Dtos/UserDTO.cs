@@ -32,9 +32,4 @@ namespace Application.Users.Dtos
             RefreshTokenExpiryTime = refreshTokenExpiryTime;
         }
     }
-
-    public record RegisterUserDto(string Name, string LastName, string Email, string Password);
-    public record LoginUserDto(string Email, string Password);
-    public record TokenResponseDto(string AccessToken, string RefreshToken);
-    public record RefreshTokenRequestDto(Guid UserId, string RefreshToken);
 }
