@@ -50,11 +50,16 @@ namespace Kelist.API.Controllers
             );
         }
 
-        protected bool IsAuthorizedForUser(Guid userId)
+        protected bool IsAuthorizedForUsers(Guid userId)
         {
-            var claimValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No se encontró el ID del usuario autenticado.");
-            var authenticatedUserId = Guid.Parse(claimValue);
-            return authenticatedUserId == userId;
+            if (HttpContext.User.IsInRole("Admin")) return true;
+            if (HttpContext.User.IsInRole("User"))
+            {
+                var claimValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No se encontró el ID del usuario autenticado.");
+                var authenticatedUserId = Guid.Parse(claimValue);
+                return authenticatedUserId == userId;
+            }
+            return false;
         }
     }
 }
