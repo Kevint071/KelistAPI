@@ -21,7 +21,7 @@ namespace Kelist.API
             var builder = WebApplication.CreateBuilder(args);
 
             var vaultToken = Environment.GetEnvironmentVariable("VAULT_TOKEN");
-            if (string.IsNullOrEmpty(vaultToken)) throw new Exception("El token de Vault no está configurado en las variables de entorno.");
+            if (string.IsNullOrEmpty(vaultToken)) throw new Exception("El token de Vault no estÃ¡ configurado en las variables de entorno.");
 
             var authMethod = new TokenAuthMethodInfo(vaultToken);
             var vaultClientSettings = new VaultClientSettings("http://localhost:8200", authMethod);
@@ -31,7 +31,7 @@ namespace Kelist.API
             try
             {
                 var secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "jwt-signing-key", mountPoint: "secret");
-                jwtKey = secret.Data.Data["key"]?.ToString() ?? throw new InvalidOperationException("La clave JWT no se encontró en el secreto de Vault.");
+                jwtKey = secret.Data.Data["key"]?.ToString() ?? throw new InvalidOperationException("La clave JWT no se encontrÃ³ en el secreto de Vault.");
             }
             catch (VaultSharp.Core.VaultApiException ex)
             {
@@ -75,15 +75,21 @@ namespace Kelist.API
                     };
                 });
 
-            var app = builder.Build();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
 
+            var app = builder.Build();
             if (app.Environment.IsDevelopment())
             {
+                app.UseCors("AllowLocalhost");
                 app.MapOpenApi();
-                app.UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("/openapi/v1.json", "v1");
-                });
                 app.MapScalarApiReference();
                 app.ApplyMigrations();
             }
