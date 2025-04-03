@@ -18,6 +18,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(x => x.Email).IsRequired();
 
             builder.Property(x => x.PasswordHash).IsRequired();
+            builder.Property(x => x.Role).IsRequired();
             builder.Property(x => x.RefreshToken);
             builder.Property(x => x.RefreshTokenExpiryTime);
 

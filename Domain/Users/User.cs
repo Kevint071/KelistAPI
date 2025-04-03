@@ -16,6 +16,7 @@ namespace Domain.Users
             PasswordHash = passwordHash;
             RefreshToken = refreshToken;
             RefreshTokenExpiryTime = refreshTokenExpiryTime;
+            Role = "User";
         }
 
         private User() { }
@@ -25,6 +26,7 @@ namespace Domain.Users
         public LastName LastName { get; private set; } = default!;
         public string FullName => $"{PersonName.Value} {LastName.Value}";
         public Email Email { get; private set; } = default!;
+        public string Role { get; private set; } = "User";
         public string PasswordHash { get; private set; } = default!;
         public string? RefreshToken { get; private set; }
         public DateTime? RefreshTokenExpiryTime { get; private set; }
@@ -34,6 +36,11 @@ namespace Domain.Users
         {
             RefreshToken = refreshToken;
             RefreshTokenExpiryTime = expiryTime;
+        }
+
+        public void SetRole(string role)
+        {
+            Role = role;
         }
 
         public void NotifyCreate()

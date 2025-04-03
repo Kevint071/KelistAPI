@@ -23,7 +23,7 @@ namespace Application.Common.Mappers
                 userDto.RefreshToken,
                 userDto.RefreshTokenExpiryTime
             );
-
+            user.SetRole(userDto.Role);
             user.TaskLists.AddRange(userDto.TaskLists.Select(tl =>
             {
                 var taskList = new TaskList(
@@ -49,6 +49,7 @@ namespace Application.Common.Mappers
                 user.LastName.Value,
                 user.Email.Value,
                 user.PasswordHash,
+                user.Role,
                 user.RefreshToken,
                 user.RefreshTokenExpiryTime,
                 [.. user.TaskLists.Select(tl => new TaskListDTO

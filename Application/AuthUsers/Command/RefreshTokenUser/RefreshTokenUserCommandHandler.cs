@@ -1,14 +1,14 @@
 ﻿using System.Security.Claims;
+using Application.AuthUsers.Dtos;
 using Application.Common.Mappers;
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
-using Application.Users.Dtos;
 using ErrorOr;
 using MediatR;
 
 namespace Application.AuthUsers.Command.RefreshTokenUser
 {
-    internal sealed class RefreshTokenUserCommandHandler : IRequestHandler<RefreshTokenUserCommand, ErrorOr<TokenResponseDto>>
+    internal sealed class RefreshTokenUserCommandHandler : IRequestHandler<RefreshTokenUserCommand, ErrorOr<TokenResponseDTO>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +21,7 @@ namespace Application.AuthUsers.Command.RefreshTokenUser
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
-        public async Task<ErrorOr<TokenResponseDto>> Handle(RefreshTokenUserCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<TokenResponseDTO>> Handle(RefreshTokenUserCommand request, CancellationToken cancellationToken)
         {
             var userDto = await _userRepository.GetByIdAsync(request.UserId);
             if (userDto == null || userDto.RefreshToken != request.RefreshToken || userDto.RefreshTokenExpiryTime <= DateTime.UtcNow) return Domain.DomainErrors.Errors.User.InvalidRefreshToken;
@@ -32,7 +32,8 @@ namespace Application.AuthUsers.Command.RefreshTokenUser
             {
                 new(ClaimTypes.Name, user.FullName),
                 new(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
-                new(ClaimTypes.Email, user.Email.Value)
+                new(ClaimTypes.Email, user.Email.Value),
+                new(ClaimTypes.Role, user.Role)
             };
 
             string accessToken = _tokenService.CreateJwtToken(claims);
@@ -43,7 +44,7 @@ namespace Application.AuthUsers.Command.RefreshTokenUser
 
             _userRepository.Update(userDto);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return new TokenResponseDto(accessToken, refreshToken);
+            return new TokenResponseDTO(accessToken, refreshToken);
         }
     }
 }

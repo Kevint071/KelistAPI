@@ -18,7 +18,8 @@ namespace Kelist.API.Middlewares
             _exceptionHandlers = new()
             {
                 { typeof(DbUpdateException), HandleDbUpdateException },
-                { typeof(Exception), HandleGenericException }
+                { typeof(Exception), HandleGenericException },
+                { typeof(InvalidOperationException), HandleInvalidOperationException }
             };
         }
 
@@ -70,7 +71,6 @@ namespace Kelist.API.Middlewares
                     Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.8";
                     Title = "Duplicate Key Error";
                     Detail = $"Cannot insert duplicate key row in object '{objectName}'. The duplicate value is '{duplicateValue}'";
-                    
                     break;
                 default:
                     Status = (int)HttpStatusCode.BadRequest;
@@ -94,6 +94,24 @@ namespace Kelist.API.Middlewares
             string json = JsonSerializer.Serialize(problem);
             context.Response.ContentType = "application/json";
 
+            await context.Response.WriteAsync(json);
+        }
+
+        private async Task HandleInvalidOperationException(HttpContext context, Exception ex)
+        {
+            _logger.LogWarning(ex, "Invalid operation occurred: {Message}", ex.Message);
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            ProblemDetails problem = new()
+            {
+                Status = (int)HttpStatusCode.Unauthorized,
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.3",
+                Title = "Unauthorized",
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            };
+
+            string json = JsonSerializer.Serialize(problem);
+            context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(json);
         }
 
