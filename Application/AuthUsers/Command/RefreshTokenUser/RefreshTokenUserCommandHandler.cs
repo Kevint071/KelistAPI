@@ -32,7 +32,8 @@ namespace Application.AuthUsers.Command.RefreshTokenUser
             {
                 new(ClaimTypes.Name, user.FullName),
                 new(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
-                new(ClaimTypes.Email, user.Email.Value)
+                new(ClaimTypes.Email, user.Email.Value),
+                new(ClaimTypes.Role, user.Role)
             };
 
             string accessToken = _tokenService.CreateJwtToken(claims);
