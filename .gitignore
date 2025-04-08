@@ -313,3 +313,4 @@ $RECYCLE.BIN/
 
 # Envs
 .env
+**/vault_data/**
