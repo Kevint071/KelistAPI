@@ -24,7 +24,8 @@ namespace Kelist.API
             if (string.IsNullOrEmpty(vaultToken)) throw new Exception("El token de Vault no está configurado en las variables de entorno.");
 
             var authMethod = new TokenAuthMethodInfo(vaultToken);
-            var vaultClientSettings = new VaultClientSettings("http://localhost:8200", authMethod);
+            var vaultAddr = Environment.GetEnvironmentVariable("VAULT_ADDR");
+            var vaultClientSettings = new VaultClientSettings(vaultAddr, authMethod);
             var vaultClient = new VaultClient(vaultClientSettings);
 
             string jwtKey;
