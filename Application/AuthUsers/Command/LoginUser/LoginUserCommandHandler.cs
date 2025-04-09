@@ -1,11 +1,11 @@
 ﻿using System.Security.Claims;
+using Application.AuthUsers.Dtos;
+using Application.Common.Mappers;
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Domain.DomainErrors;
 using ErrorOr;
 using MediatR;
-using Application.Common.Mappers;
-using Application.AuthUsers.Dtos;
 
 namespace Application.AuthUsers.Command.LoginUser
 {
@@ -36,7 +36,9 @@ namespace Application.AuthUsers.Command.LoginUser
                 new(ClaimTypes.Name, user.FullName),
                 new(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
                 new(ClaimTypes.Email, user.Email.Value),
-                new(ClaimTypes.Role, user.Role)
+                new(ClaimTypes.Role, user.Role),
+                new("createdAt", user.CreatedAt.ToString("O")),
+                new("updatedAt", user.UpdatedAt.ToString("O"))
             };
 
             string accessToken = _tokenService.CreateJwtToken(claims);
