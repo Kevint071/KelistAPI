@@ -7,13 +7,15 @@ namespace Domain.Users
 {
     public sealed class User : AggregateRoot
     {
-        public User(UserId id, PersonName name, LastName lastname, Email email, string passwordHash, string? refreshToken = null, DateTime? refreshTokenExpiryTime = null)
+        public User(UserId id, PersonName name, LastName lastname, Email email, string passwordHash, DateTime createdAt, DateTime updatedAt, string? refreshToken = null, DateTime? refreshTokenExpiryTime = null)
         {
             Id = id;
             PersonName = name;
             LastName = lastname;
             Email = email;
             PasswordHash = passwordHash;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
             RefreshToken = refreshToken;
             RefreshTokenExpiryTime = refreshTokenExpiryTime;
             Role = "User";
@@ -30,6 +32,8 @@ namespace Domain.Users
         public string PasswordHash { get; private set; } = default!;
         public string? RefreshToken { get; private set; }
         public DateTime? RefreshTokenExpiryTime { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime UpdatedAt { get; private set; }
         public List<TaskList> TaskLists { get; private set; } = [];
 
         public void SetRefreshToken(string refreshToken, DateTime expiryTime)
