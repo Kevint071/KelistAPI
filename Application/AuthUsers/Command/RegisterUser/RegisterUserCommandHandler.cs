@@ -2,9 +2,9 @@
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.Users.Dtos;
+using Domain.DomainErrors;
 using ErrorOr;
 using MediatR;
-using Domain.DomainErrors;
 
 namespace Application.AuthUsers.Command.RegisterUser
 {
@@ -36,7 +36,9 @@ namespace Application.AuthUsers.Command.RegisterUser
                 name.Value,
                 lastname.Value,
                 email.Value,
-                password
+                password,
+                DateTime.UtcNow,
+                DateTime.UtcNow
             );
 
             _userRepository.Add(userDto);
