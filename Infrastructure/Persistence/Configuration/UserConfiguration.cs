@@ -21,6 +21,8 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(x => x.Role).IsRequired();
             builder.Property(x => x.RefreshToken);
             builder.Property(x => x.RefreshTokenExpiryTime);
+            builder.Property(x => x.CreatedAt);
+            builder.Property(x => x.UpdatedAt);
 
             builder.HasMany(x => x.TaskLists).WithOne().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade);
             builder.Metadata.SetPropertyAccessMode(PropertyAccessMode.Property);
