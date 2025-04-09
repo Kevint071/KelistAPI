@@ -3,10 +3,10 @@ using Application.Common.Mappers;
 using Application.Data.Interfaces;
 using Application.Data.Repositories;
 using Application.Users.Dtos;
+using Domain.DomainErrors;
 using Domain.Users;
 using ErrorOr;
 using MediatR;
-using Domain.DomainErrors;
 
 namespace Application.Users.Commands.CreateUser
 {
@@ -33,7 +33,7 @@ namespace Application.Users.Commands.CreateUser
             if (validationResult.IsError) return validationResult.Errors;
 
             var (name, lastname, email) = validationResult.Value;
-            var user = new User(new UserId(Guid.NewGuid()), name, lastname, email, _passwordService.HashPassword(command.Password));
+            var user = new User(new UserId(Guid.NewGuid()), name, lastname, email, _passwordService.HashPassword(command.Password), DateTime.UtcNow, DateTime.UtcNow);
 
             var userDto = UserMapper.ToDto(user);
             _userRepository.Add(userDto);

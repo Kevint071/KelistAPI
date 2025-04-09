@@ -20,6 +20,8 @@ namespace Application.Common.Mappers
                 LastName.Create(userDto.LastName).Value,
                 Email.Create(userDto.Email).Value,
                 userDto.PasswordHash,
+                userDto.CreatedAt,
+                userDto.UpdatedAt,
                 userDto.RefreshToken,
                 userDto.RefreshTokenExpiryTime
             );
@@ -49,6 +51,8 @@ namespace Application.Common.Mappers
                 user.LastName.Value,
                 user.Email.Value,
                 user.PasswordHash,
+                user.CreatedAt,
+                user.UpdatedAt,
                 user.Role,
                 user.RefreshToken,
                 user.RefreshTokenExpiryTime,

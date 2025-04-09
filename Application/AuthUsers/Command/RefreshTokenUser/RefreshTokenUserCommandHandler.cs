@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Application.AuthUsers.Command.RefreshTokenUser
 {
-    internal sealed class RefreshTokenUserCommandHandler : IRequestHandler<RefreshTokenUserCommand, ErrorOr<TokenResponseDTO>>
+    internal sealed class RefreshTokenUserCommandHandler : IRequestHandler<RefreshTokenUserCommand, ErrorOr<RefreshTokenResponseDTO>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +21,7 @@ namespace Application.AuthUsers.Command.RefreshTokenUser
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
-        public async Task<ErrorOr<TokenResponseDTO>> Handle(RefreshTokenUserCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<RefreshTokenResponseDTO>> Handle(RefreshTokenUserCommand request, CancellationToken cancellationToken)
         {
             var userDto = await _userRepository.GetByIdAsync(request.UserId);
             if (userDto == null || userDto.RefreshToken != request.RefreshToken || userDto.RefreshTokenExpiryTime <= DateTime.UtcNow) return Domain.DomainErrors.Errors.User.InvalidRefreshToken;
@@ -37,14 +37,11 @@ namespace Application.AuthUsers.Command.RefreshTokenUser
             };
 
             string accessToken = _tokenService.CreateJwtToken(claims);
-            string refreshToken = _tokenService.GenerateRefreshToken();
-
-            user.SetRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
             userDto.UpdateTokens(user.RefreshToken, user.RefreshTokenExpiryTime);
 
             _userRepository.Update(userDto);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return new TokenResponseDTO(accessToken, refreshToken);
+            return new RefreshTokenResponseDTO(accessToken);
         }
     }
 }

@@ -1,0 +1,35 @@
+services:
+  vault:
+    image: hashicorp/vault:latest
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./vault_data:/vault/file
+      - ./vault.hcl:/vault/config/vault.hcl
+    command: vault server -config=/vault/config/vault.hcl
+    networks:
+      - devnet
+    restart: unless-stopped
+ 
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - devnet
+    restart: unless-stopped
+ 
+volumes:
+  vault_data:
+  mssql_data:
+ 
+networks:
+  devnet:
+    driver: bridge

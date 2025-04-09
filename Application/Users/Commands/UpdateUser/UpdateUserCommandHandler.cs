@@ -33,10 +33,12 @@ namespace Application.Users.Commands.UpdateUser
             var (name, lastName, email) = validationResult.Value;
             string passwordHash = existingUserDto.PasswordHash;
 
-            var user = new User(new UserId(command.Id), name, lastName, email, passwordHash, existingUserDto.RefreshToken, existingUserDto.RefreshTokenExpiryTime);
+            var user = new User(new UserId(command.Id), name, lastName, email, passwordHash, existingUserDto.CreatedAt, existingUserDto.UpdatedAt, existingUserDto.RefreshToken, existingUserDto.RefreshTokenExpiryTime);
+
             existingUserDto.UpdateProfile(name.Value, lastName.Value, email.Value);
-            
+            existingUserDto.SetUpdatedAt(DateTime.UtcNow);
             user.NotifyUpdate();
+
             var events = user.GetDomainEvents();
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
